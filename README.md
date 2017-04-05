@@ -1,1 +1,4 @@
-# skill-stop
+# Stop Skill
+
+## Usage:
+* `stop`
