@@ -14,30 +14,51 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
+from os.path import join
+from mycroft.skills.core import FallbackSkill
 
 
-from adapt.intent import IntentBuilder
-
-from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill
-
-__author__ = 'jdorleans'
-
-
-class StopSkill(MycroftSkill):
+class StopSkill(FallbackSkill):
     def __init__(self):
-        super(StopSkill, self).__init__(name="StopSkill")
+        super(StopSkill, self).__init__()
 
     def initialize(self):
-        # TODO - To be generalized in MycroftSkill
-        intent = IntentBuilder("StopIntent").require("StopKeyword").build()
-        self.register_intent(intent, self.handle_intent)
+        self.register_fallback(self.handle_fallback, 50)
+        self.stop_words = self.get_vocab_from_file(join(self.vocab_dir, "StopKeyword.voc"))
 
-    def handle_intent(self, event):
-        self.emitter.emit(Message("mycroft.stop"))
+    @staticmethod
+    def get_vocab_from_file(path):
+        """
+        Load Mycroft vocabulary from file
 
-    def stop(self):
-        pass
+        Args:
+            path (str): path to vocabulary file (*.voc)
+
+        Returns:
+
+            vocabulary (list): vocabulary read from file
+        """
+        vocabulary = []
+        if path.endswith('.voc'):
+            with open(path, 'r') as voc_file:
+                for line in voc_file.readlines():
+                    if line.startswith("#"):
+                        continue
+                    parts = line.strip().split("|")
+                    entity = parts[0]
+                    vocabulary.append(entity)
+                    for alias in parts[1:]:
+                        vocabulary.append(alias)
+        return vocabulary
+
+    def handle_fallback(self, message):
+        utterance = message.data.get("utterance", "")
+        words = utterance.split(" ")
+        for stop_word in self.stop_words:
+            if stop_word in words:
+                self.emitter.emit(message.reply("mycroft.stop"))
+                return True
+        return False
 
 
 def create_skill():
