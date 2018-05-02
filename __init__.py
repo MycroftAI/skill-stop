@@ -65,7 +65,7 @@ class StopSkill(FallbackSkill):
 
     def initialize(self):
         self.register_fallback(self.handle_fallback, 50)
-        self.stop_words = get_all_vocab("StopKeyword", self.lang)
+        self.stop_words = get_all_vocab("StopKeyword", self.lang, self.vocab_path)
         
     def handle_fallback(self, message):
         utterance = message.data.get("utterance", "")
