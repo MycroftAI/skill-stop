@@ -1,4 +1,4 @@
-# Copyright 2016 Mycroft AI, Inc.
+# Copyright 2018 Mycroft AI, Inc.
 #
 # This file is part of Mycroft Core.
 #
@@ -29,9 +29,8 @@ class StopSkill(FallbackSkill):
         
     def handle_fallback(self, message):
         utterance = message.data.get("utterance", "")
-        words = utterance.split(" ")
         for stop_word in self.stop_words:
-            if stop_word in words:
+            if stop_word in utterance:
                 self.emitter.emit(message.reply("mycroft.stop", {}))
                 return True
         return False
