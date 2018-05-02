@@ -16,7 +16,47 @@
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
 from os.path import join
 from mycroft.skills.core import FallbackSkill
-from mycroft.dialog import get_all_vocab
+
+def get_all_vocab(phrase, lang=None, vocab_path=None):
+    """
+    Looks up a resource file for the given phrase.  If no file
+    is found, the requested phrase is returned as the string.
+    This will use the default language for translations.
+
+    Args:
+        phrase (str): resource phrase to retrieve/translate
+        lang (str): the language to use
+
+    Returns:
+        phrases (list): a list with all versions of the phrase
+    """
+    if not lang:
+        from mycroft.configuration import Configuration
+        lang = Configuration.get().get("lang", "en-us")
+        
+    if ".voc" not in phrase:
+        phrase += ".voc"
+        
+    voc_filename = get_language_resource_path("text", lang.lower()) + "/" + \
+        phrase
+    template = resolve_resource_file(voc_filename)
+    
+    if template:
+        with open(template) as f:
+            phrases = list(filter(bool, f.read().split('\n')))
+        
+    elif vocab_path is not None:
+        voc_filename = join(vocab_path, phrase)
+        template = resolve_resource_file(voc_filename)
+        if template:
+            with open(template) as f:
+                phrases = list(filter(bool, f.read().split('\n')))
+            
+    if not template:
+        LOG.debug("Resource file not found: " + voc_filename)
+        phrases = [phrase]
+        
+    return phrases
 
 
 class StopSkill(FallbackSkill):
