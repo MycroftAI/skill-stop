@@ -16,6 +16,7 @@
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
 from os.path import join
 from mycroft.skills.core import FallbackSkill
+from mycroft.dialog import get_all_vocab
 
 
 class StopSkill(FallbackSkill):
@@ -24,33 +25,8 @@ class StopSkill(FallbackSkill):
 
     def initialize(self):
         self.register_fallback(self.handle_fallback, 50)
-        self.stop_words = self.get_vocab_from_file(join(self.vocab_dir, "StopKeyword.voc"))
-
-    @staticmethod
-    def get_vocab_from_file(path):
-        """
-        Load Mycroft vocabulary from file
-
-        Args:
-            path (str): path to vocabulary file (*.voc)
-
-        Returns:
-
-            vocabulary (list): vocabulary read from file
-        """
-        vocabulary = []
-        if path.endswith('.voc'):
-            with open(path, 'r') as voc_file:
-                for line in voc_file.readlines():
-                    if line.startswith("#"):
-                        continue
-                    parts = line.strip().split("|")
-                    entity = parts[0]
-                    vocabulary.append(entity)
-                    for alias in parts[1:]:
-                        vocabulary.append(alias)
-        return vocabulary
-
+        self.stop_words = get_all_vocab("StopKeyword", self.lang)
+        
     def handle_fallback(self, message):
         utterance = message.data.get("utterance", "")
         words = utterance.split(" ")
