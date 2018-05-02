@@ -32,7 +32,7 @@ class StopSkill(FallbackSkill):
         words = utterance.split(" ")
         for stop_word in self.stop_words:
             if stop_word in words:
-                self.emitter.emit(message.reply("mycroft.stop"))
+                self.emitter.emit(message.reply("mycroft.stop", {}))
                 return True
         return False
 
