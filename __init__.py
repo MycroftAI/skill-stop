@@ -16,6 +16,8 @@
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
 from os.path import join
 from mycroft.skills.core import FallbackSkill
+from mycroft.util import resolve_resource_file, get_language_resource_path
+
 
 def get_all_vocab(phrase, lang=None, vocab_path=None):
     """
