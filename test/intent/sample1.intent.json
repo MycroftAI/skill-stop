@@ -1,9 +1,5 @@
 {
   "utterance": "would you shut up",
-  "intent_type": "StopIntent",
-  "intent": {
-    "StopKeyword": "shut up"
-  },
   "expected_data": {
     "__type__": "mycroft.stop"
   }
