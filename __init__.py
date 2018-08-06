@@ -16,7 +16,7 @@
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
 from os.path import join
 from mycroft.skills.core import FallbackSkill
-from mycroft.util import resolve_resource_file, get_language_resource_path
+from mycroft.util import resolve_resource_file
 
 
 def get_all_vocab(phrase, lang=None, vocab_path=None):
@@ -35,29 +35,28 @@ def get_all_vocab(phrase, lang=None, vocab_path=None):
     if not lang:
         from mycroft.configuration import Configuration
         lang = Configuration.get().get("lang", "en-us")
-        
+
     if ".voc" not in phrase:
         phrase += ".voc"
-        
-    voc_filename = get_language_resource_path("text", lang.lower()) + "/" + \
-        phrase
+
+    voc_filename = join(vocab_path, lang.lower(), phrase + '.voc')
     template = resolve_resource_file(voc_filename)
-    
+
     if template:
         with open(template) as f:
             phrases = list(filter(bool, f.read().split('\n')))
-        
+
     elif vocab_path is not None:
         voc_filename = join(vocab_path, phrase)
         template = resolve_resource_file(voc_filename)
         if template:
             with open(template) as f:
                 phrases = list(filter(bool, f.read().split('\n')))
-            
+
     if not template:
         LOG.debug("Resource file not found: " + voc_filename)
         phrases = [phrase]
-        
+
     return phrases
 
 
@@ -67,8 +66,9 @@ class StopSkill(FallbackSkill):
 
     def initialize(self):
         self.register_fallback(self.handle_fallback, 50)
-        self.stop_words = get_all_vocab("StopKeyword", self.lang, self.vocab_path)
-        
+        self.stop_words = get_all_vocab("StopKeyword", self.lang,
+                                        self.vocab_dir)
+
     def handle_fallback(self, message):
         utterance = message.data.get("utterance", "")
         for stop_word in self.stop_words:
