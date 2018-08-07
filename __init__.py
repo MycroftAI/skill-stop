@@ -14,67 +14,66 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Mycroft Core.  If not, see <http://www.gnu.org/licenses/>.
-from os.path import join
 from mycroft.skills.core import FallbackSkill
 from mycroft.util import resolve_resource_file
 
-
-def get_all_vocab(phrase, lang=None, vocab_path=None):
-    """
-    Looks up a resource file for the given phrase.  If no file
-    is found, the requested phrase is returned as the string.
-    This will use the default language for translations.
-
-    Args:
-        phrase (str): resource phrase to retrieve/translate
-        lang (str): the language to use
-
-    Returns:
-        phrases (list): a list with all versions of the phrase
-    """
-    if not lang:
-        from mycroft.configuration import Configuration
-        lang = Configuration.get().get("lang", "en-us")
-
-    if ".voc" not in phrase:
-        phrase += ".voc"
-
-    voc_filename = join(vocab_path, lang.lower(), phrase + '.voc')
-    template = resolve_resource_file(voc_filename)
-
-    if template:
-        with open(template) as f:
-            phrases = list(filter(bool, f.read().split('\n')))
-
-    elif vocab_path is not None:
-        voc_filename = join(vocab_path, phrase)
-        template = resolve_resource_file(voc_filename)
-        if template:
-            with open(template) as f:
-                phrases = list(filter(bool, f.read().split('\n')))
-
-    if not template:
-        LOG.debug("Resource file not found: " + voc_filename)
-        phrases = [phrase]
-
-    return phrases
+from os.path import join, exists
 
 
 class StopSkill(FallbackSkill):
     def __init__(self):
         super(StopSkill, self).__init__()
+        self.is_match_cache = {}
 
     def initialize(self):
         self.register_fallback(self.handle_fallback, 50)
-        self.stop_words = get_all_vocab("StopKeyword", self.lang,
-                                        self.vocab_dir)
+
+    def is_match(self, utt, voc_filename, lang=None):
+        """ Determine if the given utterance contains the vocabular proviced
+
+        This checks for vocabulary match in the utternce instead of the other
+        way around to allow the user to say things like "yes, please" and
+        still match against voc files with only "yes" in it. The method first
+        checks in the current skills voc files and secondly in the "text"
+        folder in mycroft-core. The result is cached for future uses.
+
+        Args:
+            utt (str): Utterance to be tested
+            voc_filename (str): Name of vocabulary file (e.g. 'yes' for
+                                'res/text/en-us/yes.voc')
+            lang (str): Language code, defaults to self.long
+
+        Returns:
+            bool: True if the utterance has the given vocabulary it
+        """
+        lang = lang or self.lang
+        if voc_filename not in self.is_match_cache:
+            # Check both skill/vocab/LANG and .../res/text/LANG
+            voc = join(self.vocab_dir, voc_filename + '.voc')
+            if not exists(voc):
+                voc = resolve_resource_file(join('text', lang,
+                                                 voc_filename + '.voc'))
+
+            if not exists(voc):
+                raise FileNotFoundError(
+                        'Could not find voc file, checked {} and {}'.format(voc,
+                            skill_voc))
+
+            with open(voc) as f:
+                self.is_match_cache[voc_filename] = f.read().splitlines()
+
+        # Check for match
+        if utt and any(i.strip() in utt
+                       for i in self.is_match_cache[voc_filename]):
+            return True
+        return False
+
 
     def handle_fallback(self, message):
         utterance = message.data.get("utterance", "")
-        for stop_word in self.stop_words:
-            if stop_word in utterance:
-                self.emitter.emit(message.reply("mycroft.stop", {}))
-                return True
+        if self.is_match(utterance, 'StopKeyword', self.lang):
+            self.emitter.emit(message.reply("mycroft.stop", {}))
+            return True
         return False
 
 
