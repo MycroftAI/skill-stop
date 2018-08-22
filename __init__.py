@@ -34,7 +34,7 @@ class StopSkill(MycroftSkill):
         self.register_intent(intent, self.handle_intent)
 
     def handle_intent(self, event):
-        self.emitter.emit(Message("mycroft.stop"))
+        self.bus.emit(Message("mycroft.stop"))
 
     def stop(self):
         pass
