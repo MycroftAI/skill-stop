@@ -4,8 +4,13 @@ Stop the actions of any Skill that is in progress
 ## About 
 This Skill is used by other Skills to stop any active Intent Handlers. 
 
+The user will invoke this Skill, for example, when he/she/they have heard enough about a subject (ie Wiki), or heard enough of the news report (News) or music (Spotify)
+
 ## Examples 
 * "Stop"
+* "Silence"
+* "Shut up"
+* "Be quiet"
 
 ## Credits 
 Mycroft AI (@MycroftAI)
