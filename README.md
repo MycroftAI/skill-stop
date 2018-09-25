@@ -1,4 +1,4 @@
-# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/ban.svg' card_color='#22a7f0' width='50' height='50' style='vertical-align:bottom'/> Stop
+# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/ban.svg' card_color='#EB5757' width='50' height='50' style='vertical-align:bottom'/> Stop
 Stop the actions of any Skill that is in progress
 
 ## About 
