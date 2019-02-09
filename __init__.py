@@ -12,29 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from adapt.intent import IntentBuilder
-
 from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill
-
-__author__ = 'jdorleans'
+from mycroft.skills.core import MycroftSkill, intent_handler
 
 
 class StopSkill(MycroftSkill):
     def __init__(self):
-        super(StopSkill, self).__init__(name="StopSkill")
+        super().__init__(name="StopSkill")
 
-    def initialize(self):
-        # TODO - To be generalized in MycroftSkill
-        intent = IntentBuilder("StopIntent").require("StopKeyword").build()
-        self.register_intent(intent, self.handle_intent)
-
+    @intent_handler(IntentBuilder("").require("Stop"))
     def handle_intent(self, event):
         self.bus.emit(Message("mycroft.stop"))
-
-    def stop(self):
-        pass
 
 
 def create_skill():

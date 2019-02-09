@@ -1,8 +1,8 @@
 {
   "utterance": "stop",
-  "intent_type": "StopIntent",
+  "intent_type": "handle_intent",
   "intent": {
-    "StopKeyword": "stop"
+    "Stop": "stop"
   },
   "expected_data": {
     "__type__": "mycroft.stop"
