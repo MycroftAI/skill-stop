@@ -1,25 +1,26 @@
-# <img src='https://raw.githack.com/FortAwesome/Font-Awesome/master/svgs/solid/ban.svg' card_color='#EB5757' width='50' height='50' style='vertical-align:bottom'/> Stop
-Stop the actions of any Skill that is in progress
+# <img src='https://raw.githack.com/FortAwesome/Font-Awesome/master/svgs/solid/cog.svg' card_color='#40DBB0' width='50' height='50' style='vertical-align:bottom'/> System
+General system control
 
-## About 
-This Skill is used by other Skills to stop any active Intent Handlers. 
+## About
+Provides verbal interfaces for basic framework interactions, such as the
+"Stop" command.  Also provide interface to control physical Mycroft hardware.
 
-The user will invoke this Skill, for example, when they have heard enough about a subject (ie Wiki), or heard enough of the news report (News) or music (Spotify)
+NOTE: This Skill is a little unusual in that it really doesn't do anything
+directly, rather it emits messages for the device creator to capture.
 
-## Examples 
+
+## Examples
 * "Stop"
-* "Silence"
-* "Shut up"
-* "Be quiet"
+* "Reboot"
+* "Turn off"
+* "Allow remote login"
+* "Configure wifi"
 
-## Credits 
+## Credits
 Mycroft AI (@MycroftAI)
 
 ## Category
-**Daily**
+**Configuration**
 
 ## Tags
-#stop
-#cancel
-#stop-skill
 #system
