@@ -1,0 +1,8 @@
+{
+  "utterance": "reboot",
+  "intent_type": "handle_reboot",
+  "responses": ["yes"],
+  "expected_data": {
+    "__type__": "system.reboot"
+  }
+}
