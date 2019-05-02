@@ -1,0 +1,8 @@
+{
+  "utterance": "shut down",
+  "intent_type": "handle_shutdown",
+  "responses": ["yes"],
+  "expected_data": {
+    "__type__": "system.shutdown"
+  }
+}
