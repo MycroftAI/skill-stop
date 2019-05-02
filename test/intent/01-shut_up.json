@@ -1,6 +1,6 @@
 {
   "utterance": "would you shut up",
-  "intent_type": "handle_intent",
+  "intent_type": "handle_stop",
   "intent": {
     "Stop": "shut up"
   },
