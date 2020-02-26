@@ -1,4 +1,4 @@
-Feature: mycroft-news
+Feature: mycroft-stop
 
     Scenario: stop
     Given an english speaking user
