@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
+from mycroft.audio import wait_while_speaking
 from adapt.intent import IntentBuilder
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
+from mycroft.enclosure.api import EnclosureAPI
 
 
 class StopSkill(MycroftSkill):
@@ -39,6 +42,13 @@ class StopSkill(MycroftSkill):
     @intent_file_handler("shutdown.intent")
     def handle_shutdown(self, event):
         if self.ask_yesno("confirm.shutdown") == "yes":
+            self.enclosure.eyes_color(70, 65, 69)  # soft gray
+            self.speak_dialog('shutting.down')
+            wait_while_speaking()
+            for percentage in range(100, -1, -10):
+                self.enclosure.eyes_fill(percentage)
+                time.sleep(1)
+            self.enclosure.eyes_brightness(0)
             self.bus.emit(Message("system.shutdown"))
 
     @intent_file_handler('wifi.setup.intent')
