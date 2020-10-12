@@ -14,14 +14,25 @@
 
 from adapt.intent import IntentBuilder
 from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
+from mycroft.skills.core import FallbackSkill, intent_handler, intent_file_handler 
+from mycroft.skills.skill_data import read_vocab_file
 
 
-class StopSkill(MycroftSkill):
+class StopSkill(FallbackSkill):
     def __init__(self):
         super().__init__(name="StopSkill")
 
-    @intent_handler(IntentBuilder("").require("Stop"))
+    def initialize(self):
+         self.register_fallback(self.handle_fallback, 50)
+         self.stopwords = read_vocab_file(self.find_resource('Stop.voc', 'vocab'))
+
+    def handle_fallback(self, message):
+        utt = message.data.get('utterance').lower()
+        if [utt] in self.stopwords:
+            self.handle_stop(None)
+            return True
+        return False
+
     def handle_stop(self, event):
         # Framework catches this, invokes stop() method on all skills
         self.bus.emit(Message("mycroft.stop"))
@@ -52,6 +63,10 @@ class StopSkill(MycroftSkill):
     @intent_file_handler('ssh.disable.intent')
     def handle_ssh_disable(self, event):
         self.bus.emit(Message("system.ssh.disable"))
+
+    def shutdown(self):
+        self.remove_fallback(self.handle_fallback)
+        super(StopSkill, self).shutdown()
 
 def create_skill():
     return StopSkill()
