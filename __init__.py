@@ -21,11 +21,20 @@ class StopSkill(MycroftSkill):
     def __init__(self):
         super().__init__(name="StopSkill")
 
+    def initialize(self):
+        self.bus.on('gui.page.show', self.handle_page_show)
+        self.currently_active_skill = None
+
+    def handle_page_show(self,msg):
+        self.currently_active_skill = msg.data['__from']
+
     @intent_handler(IntentBuilder("").require("Stop"))
     def handle_stop(self, event):
         with self.activity():
             # Framework catches this, invokes stop() method on all skills
-            self.bus.emit(Message("mycroft.stop"))
+            #self.bus.emit(Message("mycroft.stop"))
+            self.bus.emit(Message('mycroft.stop', data={'skill':self.currently_active_skill}))
+
 
     ######################################################################
     # Typically the enclosure will handle all of the following
