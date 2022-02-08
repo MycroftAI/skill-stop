@@ -31,9 +31,14 @@ class StopSkill(MycroftSkill):
     @intent_handler(IntentBuilder("").require("Stop"))
     def handle_stop(self, event):
         with self.activity():
+            utt = event.data['utterance']
             # Framework catches this, invokes stop() method on all skills
             #self.bus.emit(Message("mycroft.stop"))
-            self.bus.emit(Message('mycroft.stop', data={'skill':self.currently_active_skill}))
+            # TODO put in file for translation
+            if 'everything' in utt:
+                self.bus.emit(Message('mycroft.stop', data={'skill':'*'}))
+            else:
+                self.bus.emit(Message('mycroft.stop', data={'skill':self.currently_active_skill}))
 
 
     ######################################################################
