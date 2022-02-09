@@ -22,22 +22,24 @@ class StopSkill(MycroftSkill):
         super().__init__(name="StopSkill")
 
     def initialize(self):
-        self.bus.on('gui.page.show', self.handle_page_show)
+        self.bus.on('gui.namespace.displayed', self.handle_namespace_displayed)
         self.currently_active_skill = None
 
-    def handle_page_show(self,msg):
-        self.currently_active_skill = msg.data['__from']
+    def handle_namespace_displayed(self,msg):
+        self.currently_active_skill = msg.data['skill_id']
 
     @intent_handler(IntentBuilder("").require("Stop"))
     def handle_stop(self, event):
         with self.activity():
             utt = event.data['utterance']
-            # Framework catches this, invokes stop() method on all skills
+            # Framework used to 'catches this, invokes stop() method on all skills'
+            # but is now more discerning in its behavior
             #self.bus.emit(Message("mycroft.stop"))
-            # TODO put in file for translation
             if 'everything' in utt:
+                self.log.debug("The word 'everything' was detected, sending broadcast stop")
                 self.bus.emit(Message('mycroft.stop', data={'skill':'*'}))
             else:
+                self.log.debug("Mycroft Stop Skill emitting stop msg for %s, event=%s" % (self.currently_active_skill,event.data))
                 self.bus.emit(Message('mycroft.stop', data={'skill':self.currently_active_skill}))
 
 
