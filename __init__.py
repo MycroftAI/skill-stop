@@ -42,6 +42,11 @@ class StopSkill(MycroftSkill):
                 self.log.debug("Mycroft Stop Skill emitting stop msg for %s, event=%s" % (self.currently_active_skill,event.data))
                 self.bus.emit(Message('mycroft.stop', data={'skill':self.currently_active_skill}))
 
+    @intent_handler(IntentBuilder("").require("Nevermind"))
+    def handle_nevermind(self, event):
+        with self.activity():
+            # No feedback
+            pass
 
     ######################################################################
     # Typically the enclosure will handle all of the following
